@@ -143,14 +143,12 @@ object Parser {
   import Internal._
 
   implicit def Monad : Monad[Parser] = new Monad[Parser] { 
-    def pure[A](a: => A): Parser[A] = ok(a)
-    def bind[A,B](ma: Parser[A], f: A => Parser[B]) = ma flatMap f
+    def point[A](a: => A): Parser[A] = ok(a)
+    def bind[A,B](fa: Parser[A])(f: A => Parser[B]) = fa flatMap f
   }
 
-  implicit def Plus: Plus[Parser] = new Plus[Parser] { 
+  implicit def PlusEmpty: PlusEmpty[Parser] = new PlusEmpty[Parser] {
     def plus[A](a: Parser[A], b: => Parser[A]): Parser[A] = a | b
-  }
-  implicit def Empty: Empty[Parser] = new Empty[Parser] {
     def empty[A]: Parser[A] = err("zero")
   }
   implicit def Monoid[A]: Monoid[Parser[A]] = new Monoid[Parser[A]] { 
